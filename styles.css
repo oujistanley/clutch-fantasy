@@ -30,3 +30,13 @@ li {
 li.picked {
   outline: 2px solid #ffb400;
 }
+
+button {
+  background-color: #ffb400;
+  color: #0f1117;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  margin-left: 8px;
+  cursor: pointer;
+}
