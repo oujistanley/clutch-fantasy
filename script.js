@@ -16,6 +16,32 @@ const players = [
   { id: 15, name: "Player 15", team: "Team Charlie", price: 6.0 },
 ];
 
+// Fake stats for one round. Missing players score 0.
+const stats = {
+  1:  { kills: 42, deaths: 30, assists: 8,  teamWon: true,  mvp: true },
+  2:  { kills: 35, deaths: 28, assists: 12, teamWon: true,  mvp: false },
+  3:  { kills: 28, deaths: 31, assists: 6,  teamWon: true,  mvp: false },
+  6:  { kills: 30, deaths: 34, assists: 5,  teamWon: false, mvp: false },
+  7:  { kills: 25, deaths: 36, assists: 9,  teamWon: false, mvp: false },
+  11: { kills: 38, deaths: 27, assists: 10, teamWon: true,  mvp: false },
+};
+
+function calcPoints(s) {
+  let pts = 0;
+  pts += s.kills * 1;
+  pts += s.assists * 0.5;
+  pts -= s.deaths * 0.5;
+  if (s.teamWon) pts += 3;
+  if (s.mvp) pts += 3;
+  return pts;
+}
+
+function pointsFor(id) {
+  const s = stats[id];
+  if (!s) return 0;
+  return calcPoints(s);
+}
+
 const STARTING_BUDGET = 40.0;
 const SQUAD_SIZE = 5;
 let squad = [];
@@ -64,13 +90,18 @@ function togglePlayer(id) {
   for (const p of players) {
     if (!squad.includes(p.id)) continue;
     const li = document.createElement("li");
-    li.textContent = p.name + " (" + p.team + ") - " + p.price.toFixed(1);
+    li.textContent = p.name + " (" + p.team + ") - " + p.price.toFixed(1) + " | " + pointsFor(p.id).toFixed(1) + " pts";
     const btn = document.createElement("button");
     btn.textContent = "Remove";
     btn.addEventListener("click", function () { togglePlayer(p.id); });
     li.appendChild(btn);
     squadList.appendChild(li);
   }
+    let total = 0;
+  for (const id of squad) {
+    total += pointsFor(id);
+  }
+  document.getElementById("points").textContent = total.toFixed(1);
 }
 
 function render() {
@@ -89,3 +120,4 @@ function render() {
 }
 
 render();
+
