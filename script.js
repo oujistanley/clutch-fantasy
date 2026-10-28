@@ -1,19 +1,42 @@
-function calcPoints(s) {
+function calcPoints(s, teamWon) {
   let pts = 0;
   pts += s.kills * 1;
   pts += s.assists * 0.5;
   pts -= s.deaths * 0.5;
-  if (s.teamWon) pts += 3;
+  if (teamWon) pts += 3;
   if (s.mvp) pts += 3;
   return pts;
 }
 
-function pointsFor(id) {
-  const s = stats[id];
+function teamOf(id) {
+  const p = players.find(function (x) { return x.id === id; });
+  return p ? p.team : null;
+}
+
+function teamWonInRound(team, round) {
+  for (const m of round.matches) {
+    if (m.teamA === team || m.teamB === team) {
+      return m.winner === team;
+    }
+  }
+  return false;
+}
+
+function pointsInRound(id, round) {
+  const s = round.stats[id];
   if (!s) return 0;
-  let pts = calcPoints(s);
+  const won = teamWonInRound(teamOf(id), round);
+  let pts = calcPoints(s, won);
   if (id === captainId) pts *= 2;
   return pts;
+}
+
+function pointsFor(id) {
+  let total = 0;
+  for (const round of rounds) {
+    total += pointsInRound(id, round);
+  }
+  return total;
 }
 
 const STARTING_BUDGET = 40.0;
